@@ -31,8 +31,7 @@ jwt.init_app(app)
 
 from model import User, Recipe, Order, BrewMethod, Ingredient, RecipeIngredient
 
-ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', 'http://localhost:3000,http://localhost:3001,http://localhost:5173,http://127.0.0.1:3000').split(',')
-app.logger.info(f"CORS allowed origins: {ALLOWED_ORIGINS}")
+ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', 'http://localhost:3000,http://localhost:3001,http://localhost:5173,http://127.0.0.1:3000,https://lopdrinks-blwa.vercel.app').split(',')
 CORS(app, supports_credentials=True, resources={
     r"/*": {
         "origins": ALLOWED_ORIGINS,

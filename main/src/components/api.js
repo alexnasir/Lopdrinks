@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const BASE_URL = process.env.REACT_APP_API_URL || 'https://lopdrinks.onrender.com';
 
 const Api = () => {
   const [token, setToken] = useState(localStorage.getItem('token'));
