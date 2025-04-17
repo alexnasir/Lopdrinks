@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__, static_folder='static', static_url_path='/')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///coffee.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/coffee.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'a-very-secure-random-string')
 app.config['UPLOAD_FOLDER'] = os.path.join(app.static_folder, 'uploads')
@@ -30,6 +30,9 @@ migrate.init_app(app, db)
 jwt.init_app(app)
 
 from model import User, Recipe, Order, BrewMethod, Ingredient, RecipeIngredient
+
+with app.app_context():
+     db.create_all()
 
 ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', 'http://localhost:3000,http://localhost:3001,http://localhost:5173,http://127.0.0.1:3000,https://lopdrinks-blwa.vercel.app').split(',')
 CORS(app, supports_credentials=True, resources={
@@ -579,6 +582,4 @@ def delete_order(order_id):
 
 # ... (rest of the file unchanged)
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True, host='0.0.0.0', port=5000)
