@@ -13,6 +13,7 @@ from extensions import db, migrate, jwt
 load_dotenv()
 
 app = Flask(__name__, static_folder='static', static_url_path='/')
+# Use absolute path for SQLite in Render
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///' + os.path.join(app.instance_path, 'coffee.db'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'a-very-secure-random-string')
@@ -35,7 +36,7 @@ from model import User, Recipe, Order, BrewMethod, Ingredient, RecipeIngredient
 with app.app_context():
     db.create_all()
 
-ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', 'http://localhost:3000,http://localhost:3001,http://localhost:5173,http://127.0.0.1:3000,https://lopdrinks-blwa.vercel.app').split(',')
+ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', 'http://localhost:3000,http://localhost:3001,http://localhost:5173,http://127.0.0.1:3000,https://lopdrinks-blwa.vercel.app,https://lopdrinks-blwa-5ky8hytoj-alexs-projects-7f85cd3e.vercel.app').split(',')
 app.logger.info(f"CORS allowed origins: {ALLOWED_ORIGINS}")
 CORS(app, supports_credentials=True, resources={
     r"/*": {
@@ -46,6 +47,7 @@ CORS(app, supports_credentials=True, resources={
         "supports_credentials": True
     }
 })
+
 
 # ... rest of the code remains unchanged ...
 
