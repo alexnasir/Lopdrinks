@@ -8,7 +8,6 @@ const brewService = {
     return data ?? [];
   },
 
-  /** @param {{ name: string, details?: string }} payload */
   create: async (payload) => {
     const { data } = await apiClient.post(ENDPOINTS.BREW_METHODS, payload);
     return data;
