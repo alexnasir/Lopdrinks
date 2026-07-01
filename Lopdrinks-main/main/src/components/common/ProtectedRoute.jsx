@@ -8,17 +8,23 @@ import { ROUTES, ROLES } from '../../constants';
  *
  * @param {{ adminOnly?: boolean, children: React.ReactNode }} props
  *
- * - Unauthenticated users → /login
- * - Non-admin users on adminOnly routes → /user-dashboard
+ * Reads role from both AuthContext and localStorage so it never
+ * races against the async state update that follows persistAuth().
  */
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { isLoggedIn, role } = useAuth();
 
-  if (!isLoggedIn) {
+  // persistAuth writes to localStorage synchronously before setting React state.
+  // Reading from localStorage here ensures ProtectedRoute never sees a stale role
+  // on the first render after login.
+  const effectiveRole = role || localStorage.getItem('role') || ROLES.USER;
+  const loggedIn = isLoggedIn || Boolean(localStorage.getItem('token'));
+
+  if (!loggedIn) {
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
 
-  if (adminOnly && role !== ROLES.ADMIN) {
+  if (adminOnly && effectiveRole !== ROLES.ADMIN) {
     return <Navigate to={ROUTES.USER_DASHBOARD} replace />;
   }
 

@@ -68,11 +68,14 @@ const AppRoutes = () => {
   // ── Auth handlers ──────────────────────────────────────────────────────
   const handleLogin = useCallback(async (data) => {
     const result = await authService.login(data);
-    const role = result.role || ROLES.USER;
-    persistAuth(result.token, role);
-    const destination = role === ROLES.ADMIN ? ROUTES.ADMIN_DASHBOARD : ROUTES.USER_DASHBOARD;
-    toast.success(role === ROLES.ADMIN ? 'Welcome back, Admin!' : 'Welcome back!');
-    navigateRef.current(destination);
+    const userRole = result.role || ROLES.USER;
+    persistAuth(result.token, userRole);
+    const destination =
+      userRole === ROLES.ADMIN ? ROUTES.ADMIN_DASHBOARD : ROUTES.USER_DASHBOARD;
+    toast.success(userRole === ROLES.ADMIN ? 'Welcome back, Admin!' : 'Welcome back!');
+    // Use setTimeout to let AuthContext state flush before navigating,
+    // so ProtectedRoute reads the updated role on first render.
+    setTimeout(() => navigateRef.current(destination, { replace: true }), 0);
   }, [persistAuth]);
 
   const handleRegister = useCallback(async (data) => {
