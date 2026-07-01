@@ -1,59 +1,56 @@
 #!/usr/bin/env bash
 # start.sh — Render startup script
 #
-# Handles two scenarios safely:
-#   1. Fresh DB (no tables)      → db upgrade creates everything
-#   2. Existing DB, no Alembic   → db stamp head + db upgrade (no-op for existing tables)
-#   3. Existing DB + Alembic     → db upgrade applies only new migrations
-#
-# The migration itself is now idempotent (IF NOT EXISTS guards), so
-# re-running it on an already-migrated DB is always safe.
+# Order of operations:
+#   1. Detect whether alembic_version table exists
+#   2. If tables exist but no alembic tracking → stamp head (no DDL)
+#   3. Run flask db upgrade (applies any pending migrations)
+#   4. Run seed.py (idempotent — skips existing records)
+#   5. Start gunicorn
 
 set -e
 
-echo "==> Checking Alembic version table..."
+echo "==> [1/4] Checking Alembic version table..."
 
-# Check whether alembic_version table exists in the DB.
-# If it doesn't, stamp the current head so Alembic knows the DB is up to date.
 python - <<'EOF'
 import os, sys
 from sqlalchemy import create_engine, text
 
 db_url = os.environ.get("DATABASE_URL", "")
 if not db_url:
-    print("No DATABASE_URL set, skipping stamp check.")
+    print("No DATABASE_URL — skipping stamp check (SQLite dev mode).")
     sys.exit(0)
 
 engine = create_engine(db_url)
 with engine.connect() as conn:
-    result = conn.execute(text(
+    alembic_exists = conn.execute(text(
         "SELECT EXISTS (SELECT 1 FROM information_schema.tables "
         "WHERE table_name = 'alembic_version')"
-    ))
-    alembic_exists = result.scalar()
+    )).scalar()
 
     if not alembic_exists:
-        # Check if our tables already exist (DB was created before Alembic tracking)
-        result2 = conn.execute(text(
+        tables_exist = conn.execute(text(
             "SELECT EXISTS (SELECT 1 FROM information_schema.tables "
             "WHERE table_name = 'brew_method')"
-        ))
-        tables_exist = result2.scalar()
+        )).scalar()
         if tables_exist:
-            print("Tables exist but no alembic_version found — stamping head.")
+            print("Tables exist but no alembic_version — stamping head.")
             import subprocess
             subprocess.run(
                 ["flask", "--app", "run:app", "db", "stamp", "head"],
                 check=True
             )
         else:
-            print("Fresh database — will run full migration.")
+            print("Fresh database — full migration will run.")
     else:
-        print("Alembic version table found — running upgrade only.")
+        print("Alembic tracking found — running upgrade only.")
 EOF
 
-echo "==> Running flask db upgrade..."
+echo "==> [2/4] Running flask db upgrade..."
 flask --app run:app db upgrade
 
-echo "==> Starting gunicorn..."
+echo "==> [3/4] Seeding database..."
+python seed.py
+
+echo "==> [4/4] Starting gunicorn..."
 exec gunicorn "run:app" --workers 2 --threads 2 --timeout 120 --bind "0.0.0.0:$PORT"
