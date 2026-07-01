@@ -1,0 +1,5 @@
+# Production requirements — includes the PostgreSQL driver.
+# Render (Linux) can build psycopg2-binary from source without issues.
+# Do NOT install this on Windows local dev — use requirements.txt instead.
+-r requirements.txt
+psycopg2-binary==2.9.9

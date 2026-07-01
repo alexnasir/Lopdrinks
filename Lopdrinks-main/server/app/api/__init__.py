@@ -17,6 +17,7 @@ def register_routes(app: Flask) -> None:
     from app.api.routes.recipe_routes import recipe_bp
     from app.api.routes.order_routes import order_bp
     from app.api.routes.upload_routes import upload_bp
+    from app.api.routes.health_routes import health_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(brew_method_bp)
@@ -24,5 +25,6 @@ def register_routes(app: Flask) -> None:
     app.register_blueprint(recipe_bp)
     app.register_blueprint(order_bp)
     app.register_blueprint(upload_bp)
+    app.register_blueprint(health_bp)
 
     app.logger.info("All blueprints registered.")
