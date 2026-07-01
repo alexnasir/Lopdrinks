@@ -1,8 +1,6 @@
 {
-  "rootDirectory": "Lopdrinks-main/main",
-  "buildCommand": "npm run build",
+  "buildCommand": "cd Lopdrinks-main/main && npm install --legacy-peer-deps && npm run build",
   "outputDirectory": "Lopdrinks-main/main/build",
-  "installCommand": "npm install --legacy-peer-deps",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
