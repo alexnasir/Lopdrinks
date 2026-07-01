@@ -163,7 +163,7 @@ const AdminCategoriesPage = () => {
         ) : categories.length === 0 ? (
           <p className="text-center py-12 text-gray-400">No categories yet. Create one above.</p>
         ) : (
-          <ul className="space-y-3" role="list" aria-label="Categories list">
+          <ul className="space-y-3" aria-label="Categories list">
             {categories.map((cat) => (
               <li
                 key={cat.id}

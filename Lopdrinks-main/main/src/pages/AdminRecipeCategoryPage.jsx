@@ -105,7 +105,7 @@ const AdminRecipeCategoryPage = () => {
         ) : filtered.length === 0 ? (
           <p className="text-center py-12 text-gray-400">No recipes found.</p>
         ) : (
-          <ul className="space-y-3" role="list" aria-label="Recipe category assignments">
+          <ul className="space-y-3" aria-label="Recipe category assignments">
             {filtered.map((recipe) => (
               <li
                 key={recipe.id}

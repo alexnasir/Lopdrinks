@@ -177,7 +177,7 @@ const RecipeDetailPage = () => {
               >
                 <FaLeaf aria-hidden="true" /> Ingredients
               </h2>
-              <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2" role="list">
+              <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {recipe.ingredients.map((ing) => (
                   <li
                     key={ing.id}
