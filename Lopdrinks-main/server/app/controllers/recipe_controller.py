@@ -17,6 +17,20 @@ def get_recipes():
     return success_response("Recipes fetched.", data=data)
 
 
+def get_recipe_by_id(recipe_id: int):
+    """GET /recipes/<recipe_id>"""
+    service = get_recipe_service()
+    data = service.get_by_id(recipe_id=recipe_id)
+    return success_response("Recipe fetched.", data=data)
+
+
+def get_recipes_by_category(category_id: int):
+    """GET /recipes/category/<category_id>"""
+    service = get_recipe_service()
+    data = service.get_by_category(category_id=category_id)
+    return success_response("Recipes fetched.", data=data)
+
+
 def create_recipe():
     """POST /recipes/"""
     identity = get_jwt_identity()

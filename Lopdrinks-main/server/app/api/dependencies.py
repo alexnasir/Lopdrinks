@@ -12,6 +12,7 @@ from app.repositories.brew_method_repository import BrewMethodRepository
 from app.repositories.ingredient_repository import IngredientRepository
 from app.repositories.recipe_repository import RecipeRepository
 from app.repositories.order_repository import OrderRepository
+from app.repositories.category_repository import CategoryRepository
 
 from app.services.auth_service import AuthService
 from app.services.brew_method_service import BrewMethodService
@@ -19,6 +20,7 @@ from app.services.ingredient_service import IngredientService
 from app.services.recipe_service import RecipeService
 from app.services.order_service import OrderService
 from app.services.upload_service import UploadService
+from app.services.category_service import CategoryService
 
 
 def get_auth_service() -> AuthService:
@@ -38,6 +40,7 @@ def get_recipe_service() -> RecipeService:
         recipe_repo=RecipeRepository(),
         brew_method_repo=BrewMethodRepository(),
         ingredient_repo=IngredientRepository(),
+        category_repo=CategoryRepository(),
     )
 
 
@@ -51,3 +54,7 @@ def get_order_service() -> OrderService:
 
 def get_upload_service() -> UploadService:
     return UploadService()
+
+
+def get_category_service() -> CategoryService:
+    return CategoryService(repo=CategoryRepository())

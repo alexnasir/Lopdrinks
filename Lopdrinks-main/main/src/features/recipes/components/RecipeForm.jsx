@@ -217,7 +217,11 @@ const RecipeForm = ({ recipe, onSubmit, onCancel }) => {
             <label className="block text-sm font-medium mb-1">Image</label>
             {formData.image_url && (
               <img
-                src={`${appConfig.apiBaseUrl}${formData.image_url}`}
+                src={
+                  formData.image_url.startsWith('http')
+                    ? formData.image_url
+                    : `${appConfig.apiBaseUrl}${formData.image_url}`
+                }
                 alt="Recipe preview"
                 className="w-32 h-32 object-cover mb-2 rounded-md"
               />

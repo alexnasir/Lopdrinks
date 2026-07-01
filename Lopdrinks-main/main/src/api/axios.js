@@ -2,13 +2,17 @@ import axios from 'axios';
 
 /**
  * Central axios instance.
- * Base URL is read from the environment at build time.
- * All requests automatically attach the JWT stored in localStorage.
+ *
+ * Development  — REACT_APP_API_URL is intentionally empty.
+ *   Requests go to a relative path (e.g. "/recipes/") which the CRA dev
+ *   server proxies to https://lopdrinks-api.onrender.com, bypassing CORS.
+ *
+ * Production   — REACT_APP_API_URL is set to the full API origin.
+ *   Requests go directly to the backend; CORS is handled server-side.
  */
 const apiClient = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'https://lopdrinks-api.onrender.com',
+  baseURL: process.env.REACT_APP_API_URL || '',
   headers: { 'Content-Type': 'application/json' },
-  withCredentials: false,  // JWT is sent via Authorization header, not cookies
 });
 
 export default apiClient;

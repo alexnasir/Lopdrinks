@@ -20,6 +20,10 @@ class RecipeRepository:
     def find_by_id(self, recipe_id: int) -> Optional[Recipe]:
         return db.session.get(Recipe, recipe_id)
 
+    def find_by_category_id(self, category_id: int) -> list[Recipe]:
+        """Return all recipes belonging to the given category."""
+        return Recipe.query.filter_by(category_id=category_id).all()
+
     def save(self, recipe: Recipe) -> Recipe:
         db.session.add(recipe)
         db.session.flush()  # Populate recipe.id before adding children

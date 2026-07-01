@@ -23,6 +23,9 @@ class Recipe(db.Model):
     brew_method_id: int | None = db.Column(
         db.Integer, db.ForeignKey("brew_method.id"), nullable=True
     )
+    category_id: int | None = db.Column(
+        db.Integer, db.ForeignKey("category.id"), nullable=True
+    )
     created_by: int | None = db.Column(
         db.Integer, db.ForeignKey("user.id"), nullable=True
     )

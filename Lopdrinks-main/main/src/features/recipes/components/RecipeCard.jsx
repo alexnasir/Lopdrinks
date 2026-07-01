@@ -35,78 +35,97 @@ const RecipeCard = memo(({ recipe, onOrder, isAdmin, onEdit, onDelete }) => {
 
   return (
     <article
-      className="bg-white shadow-md rounded-lg p-4 m-2 w-full sm:w-[300px] flex flex-col"
+      className="flex w-full flex-col overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-black/5 transition-shadow hover:shadow-md sm:w-[300px]"
       aria-label={`Recipe: ${recipe.name}`}
     >
-      <h3 className="text-lg font-semibold mb-2">{recipe.name}</h3>
-
+      {/* Image */}
       {recipe.image_url ? (
         <img
           src={recipe.image_url}
           alt={recipe.name}
-          className="w-full h-40 object-cover rounded-md mb-4"
+          className="h-40 w-full object-cover"
           loading="lazy"
         />
       ) : (
         <div
-          className="w-full h-40 bg-gray-200 rounded-md mb-4 flex items-center justify-center text-gray-500 text-sm"
+          className="flex h-40 w-full items-center justify-center bg-gray-100 text-sm text-gray-400"
           aria-label="No image available"
         >
           No image available
         </div>
       )}
 
-      <p className="text-gray-600 text-sm mb-1">{recipe.description}</p>
-      <p className="mt-1 font-medium">Price: {formatCurrency(recipe.price)}</p>
-      <p className="text-sm">Brew Method: {recipe.brew_method?.name || 'N/A'}</p>
-
-      {recipe.ingredients?.length > 0 && (
-        <div className="mt-2">
-          <p className="text-sm font-medium">Ingredients:</p>
-          <ul className="list-disc list-inside text-sm" aria-label="Ingredients list">
-            {recipe.ingredients.map((ing) => (
-              <li key={ing.id}>
-                {ing.name} ({ing.quantity})
-              </li>
-            ))}
-          </ul>
+      {/* Body */}
+      <div className="flex flex-1 flex-col gap-3 p-4">
+        {/* Title + price */}
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="text-lg font-semibold leading-snug text-gray-900">
+            {recipe.name}
+          </h3>
+          <span className="whitespace-nowrap text-base font-semibold text-gray-900">
+            {formatCurrency(recipe.price)}
+          </span>
         </div>
-      )}
 
-      {/* Order status feedback */}
-      {orderStatus && (
-        <p
-          role="status"
-          aria-live="polite"
-          className={`mt-2 text-sm ${
-            orderStatus.startsWith('Failed') ? 'text-red-500' : 'text-green-600'
-          }`}
-        >
-          {orderStatus}
+        {recipe.description && (
+          <p className="line-clamp-2 text-sm text-gray-500">{recipe.description}</p>
+        )}
+
+        <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
+          {recipe.brew_method?.name || 'N/A'}
         </p>
-      )}
 
-      {/* Actions */}
-      <div className="mt-4 flex flex-col sm:flex-row gap-2 mt-auto">
-        <div className="flex items-center gap-2">
+        {recipe.ingredients?.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {recipe.ingredients.map((ing) => (
+              <span
+                key={ing.id}
+                className="rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-600"
+              >
+                {ing.name} · {ing.quantity}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Order status feedback */}
+        {orderStatus && (
+          <p
+            role="status"
+            aria-live="polite"
+            className={`text-sm font-medium ${
+              orderStatus.startsWith('Failed') ? 'text-red-500' : 'text-green-600'
+            }`}
+          >
+            {orderStatus}
+          </p>
+        )}
+
+        {/* Actions */}
+        <div className="mt-auto flex items-center gap-2 pt-2">
           <button
             onClick={handleOrderClick}
-            className="bg-green-500 text-white px-3 py-2 rounded-md hover:bg-green-600 transition-colors focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="flex-1 rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-1"
             aria-label={showQty ? `Confirm order of ${quantity}` : `Order ${recipe.name}`}
           >
             {showQty ? 'Confirm Order' : 'Order Now'}
           </button>
+
           {showQty && (
-            <div className="flex items-center" role="group" aria-label="Quantity selector">
+            <div
+              className="flex items-center overflow-hidden rounded-lg border border-gray-200"
+              role="group"
+              aria-label="Quantity selector"
+            >
               <button
                 onClick={decrease}
-                className="bg-gray-300 text-black px-2 py-1 rounded-l-md hover:bg-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
+                className="px-2.5 py-2 text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-gray-300"
                 aria-label="Decrease quantity"
               >
                 −
               </button>
               <span
-                className="px-3 py-1 text-blue-700 bg-gray-100"
+                className="min-w-[2rem] px-1 text-center text-sm font-medium text-gray-800"
                 aria-live="polite"
                 aria-label={`Quantity: ${quantity}`}
               >
@@ -114,7 +133,7 @@ const RecipeCard = memo(({ recipe, onOrder, isAdmin, onEdit, onDelete }) => {
               </span>
               <button
                 onClick={increase}
-                className="bg-gray-300 text-black px-2 py-1 rounded-r-md hover:bg-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
+                className="px-2.5 py-2 text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-gray-300"
                 aria-label="Increase quantity"
               >
                 +
@@ -124,22 +143,22 @@ const RecipeCard = memo(({ recipe, onOrder, isAdmin, onEdit, onDelete }) => {
         </div>
 
         {isAdmin && (
-          <>
+          <div className="flex gap-2 border-t border-gray-100 pt-3">
             <button
               onClick={() => onEdit(recipe)}
-              className="bg-yellow-500 text-white px-3 py-2 rounded-md hover:bg-yellow-600 transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="flex-1 rounded-lg bg-amber-500 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-1"
               aria-label={`Edit recipe: ${recipe.name}`}
             >
               Edit
             </button>
             <button
               onClick={() => onDelete(recipe.id)}
-              className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-red-400"
+              className="flex-1 rounded-lg bg-red-500 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-1"
               aria-label={`Delete recipe: ${recipe.name}`}
             >
               Delete
             </button>
-          </>
+          </div>
         )}
       </div>
     </article>

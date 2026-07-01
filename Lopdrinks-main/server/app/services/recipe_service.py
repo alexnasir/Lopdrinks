@@ -8,6 +8,7 @@ from app.models.recipe_ingredient import RecipeIngredient
 from app.repositories.recipe_repository import RecipeRepository
 from app.repositories.brew_method_repository import BrewMethodRepository
 from app.repositories.ingredient_repository import IngredientRepository
+from app.repositories.category_repository import CategoryRepository
 from app.exceptions.custom_exceptions import (
     ValidationError,
     NotFoundError,
@@ -26,6 +27,11 @@ def _serialise_recipe(r: Recipe) -> dict:
         "price": float(r.price),
         "takeaway": r.takeaway,
         "image_url": r.image_url,
+        "category": (
+            {"id": r.category.id, "name": r.category.name}
+            if r.category
+            else None
+        ),
         "brew_method": (
             {
                 "id": r.brew_method.id,
@@ -53,14 +59,35 @@ class RecipeService:
         recipe_repo: RecipeRepository,
         brew_method_repo: BrewMethodRepository,
         ingredient_repo: IngredientRepository,
+        category_repo: CategoryRepository,
     ) -> None:
         self._recipe_repo = recipe_repo
         self._brew_method_repo = brew_method_repo
         self._ingredient_repo = ingredient_repo
+        self._category_repo = category_repo
 
     def get_all(self) -> list[dict]:
         recipes = self._recipe_repo.find_all()
         logger.debug("Fetched %d recipes", len(recipes))
+        return [_serialise_recipe(r) for r in recipes]
+
+    def get_by_id(self, recipe_id: int) -> dict:
+        """
+        Raises:
+            NotFoundError: Recipe not found.
+        """
+        recipe = self._recipe_repo.find_by_id(recipe_id)
+        if not recipe:
+            raise NotFoundError(f"Recipe {recipe_id} not found.")
+        return _serialise_recipe(recipe)
+
+    def get_by_category(self, category_id: int) -> list[dict]:
+        """
+        Raises:
+            NotFoundError: Category not found (no recipes is still valid — returns []).
+        """
+        recipes = self._recipe_repo.find_by_category_id(category_id)
+        logger.debug("Fetched %d recipes for category_id=%d", len(recipes), category_id)
         return [_serialise_recipe(r) for r in recipes]
 
     def create(self, data: dict[str, Any], created_by: int) -> dict:
@@ -74,9 +101,14 @@ class RecipeService:
         name = data.get("name")
         price = data.get("price")
         brew_method_id = data.get("brew_method_id")
+        category_id = data.get("category_id")
 
-        if not all([name, price, brew_method_id]):
-            raise ValidationError("name, price, and brew_method_id are required.")
+        if not all([name, price, brew_method_id, category_id]):
+            raise ValidationError("name, price, brew_method_id, and category_id are required.")
+
+        category = self._category_repo.find_by_id(category_id)
+        if not category:
+            raise ValidationError(f"Category {category_id} not found.")
 
         brew_method = self._brew_method_repo.find_by_id(brew_method_id)
         if not brew_method:
@@ -96,6 +128,7 @@ class RecipeService:
             takeaway=data.get("takeaway", False),
             image_url=data.get("image_url"),
             brew_method_id=brew_method_id,
+            category_id=category_id,
             created_by=created_by,
         )
 
@@ -136,6 +169,12 @@ class RecipeService:
         recipe.price = float(data.get("price", recipe.price))
         recipe.takeaway = data.get("takeaway", recipe.takeaway)
         recipe.image_url = data.get("image_url", recipe.image_url)
+
+        if "category_id" in data:
+            cat = self._category_repo.find_by_id(data["category_id"])
+            if not cat:
+                raise ValidationError(f"Category {data['category_id']} not found.")
+            recipe.category_id = data["category_id"]
 
         if "brew_method_id" in data:
             bm = self._brew_method_repo.find_by_id(data["brew_method_id"])

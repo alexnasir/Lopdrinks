@@ -3,7 +3,7 @@
  * @param {number|string} amount
  */
 export const formatCurrency = (amount) =>
-  `$${Number(amount).toFixed(2)}`;
+  `Ksh.${Number(amount).toFixed(2)}`;
 
 /**
  * Locale-aware date/time formatter.
