@@ -10,10 +10,8 @@ services:
 
     buildCommand: pip install -r requirements-prod.txt
 
-    startCommand: gunicorn "run:app" --workers 2 --threads 2 --timeout 120 --bind 0.0.0.0:$PORT
-
-    # Run DB migrations automatically before each deploy
-    preDeployCommand: flask --app run:app db upgrade
+    # Migrations run before gunicorn starts (preDeployCommand is paid-tier only)
+    startCommand: flask --app run:app db upgrade && gunicorn "run:app" --workers 2 --threads 2 --timeout 120 --bind 0.0.0.0:$PORT
 
     healthCheckPath: /health
 
