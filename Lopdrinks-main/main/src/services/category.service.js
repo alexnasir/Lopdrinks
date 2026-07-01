@@ -1,10 +1,11 @@
 import apiClient from '../api/interceptors';
 import { ENDPOINTS } from '../api/endpoints';
 
+// All list endpoints return { success, message, data: [...] }
 const toArray = (raw) => {
   if (Array.isArray(raw)) return raw;
   if (raw && typeof raw === 'object') {
-    for (const key of ['items', 'categories', 'data', 'results']) {
+    for (const key of ['data', 'items', 'categories', 'results']) {
       if (Array.isArray(raw[key])) return raw[key];
     }
   }

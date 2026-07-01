@@ -26,7 +26,8 @@ const recipeService = {
   /** @param {number} id */
   getById: async (id) => {
     const { data } = await apiClient.get(ENDPOINTS.RECIPE(id));
-    return data;
+    // Envelope: { success, message, data: { recipe object } }
+    return data?.data ?? data;
   },
 
   /** @param {object} payload */
