@@ -61,9 +61,10 @@ def create_app(config_name: str | None = None) -> Flask:
     # -- Import models so Flask-Migrate can detect them -----------------------
     from app.models import user, recipe, order, brew_method, ingredient, recipe_ingredient  # noqa: F401
 
-    # -- Database bootstrap (dev convenience) ---------------------------------
-    with app.app_context():
-        db.create_all()
+    # NOTE: db.create_all() is intentionally omitted here.
+    # Schema is managed exclusively by Alembic migrations (flask db upgrade).
+    # Using db.create_all() alongside Alembic causes DuplicateTable errors
+    # on PostgreSQL in production. For SQLite local dev, migrations handle it.
 
     # -- Middleware / request hooks -------------------------------------------
     register_request_hooks(app)
