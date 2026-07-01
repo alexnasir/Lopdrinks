@@ -5,14 +5,14 @@ services:
     region: oregon
     plan: free
 
-    # Render runs commands from the repo root, so prefix everything with server/
-    rootDir: server
+    # The Flask backend lives inside Lopdrinks-main/server/
+    rootDir: Lopdrinks-main/server
 
     buildCommand: pip install -r requirements-prod.txt
 
     startCommand: gunicorn "run:app" --workers 2 --threads 2 --timeout 120 --bind 0.0.0.0:$PORT
 
-    # Run DB migrations automatically on every deploy before traffic is served
+    # Run DB migrations automatically before each deploy
     preDeployCommand: flask --app run:app db upgrade
 
     healthCheckPath: /health
@@ -23,15 +23,13 @@ services:
       - key: PYTHON_VERSION
         value: "3.11.9"
       - key: SECRET_KEY
-        generateValue: true          # Render auto-generates a secure random value
+        generateValue: true
       - key: JWT_SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
         fromDatabase:
           name: lopdrinks-db
           property: connectionString
-      # Set ALLOWED_ORIGINS manually in the Render dashboard after deploy
-      # e.g. https://lopdrinks-blwa.vercel.app,https://your-custom-domain.com
       - key: ALLOWED_ORIGINS
         value: "https://lopdrinks-blwa.vercel.app"
 
