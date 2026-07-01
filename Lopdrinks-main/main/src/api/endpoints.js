@@ -11,6 +11,11 @@ export const ENDPOINTS = {
   // Recipes
   RECIPES: '/recipes/',
   RECIPE: (id) => `/recipes/${id}`,
+  RECIPES_BY_CATEGORY: (categoryId) => `/recipes/category/${categoryId}`,
+
+  // Categories
+  CATEGORIES: '/categories/',
+  CATEGORY: (id) => `/categories/${id}`,
 
   // Brew Methods
   BREW_METHODS: '/brew_methods/',

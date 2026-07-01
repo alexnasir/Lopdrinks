@@ -1,4 +1,5 @@
 import React, { useState, useCallback, memo } from 'react';
+import { Link } from 'react-router-dom';
 import { formatCurrency } from '../../../utils/formatters';
 
 /**
@@ -38,30 +39,35 @@ const RecipeCard = memo(({ recipe, onOrder, isAdmin, onEdit, onDelete }) => {
       className="flex w-full flex-col overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-black/5 transition-shadow hover:shadow-md sm:w-[300px]"
       aria-label={`Recipe: ${recipe.name}`}
     >
-      {/* Image */}
-      {recipe.image_url ? (
-        <img
-          src={recipe.image_url}
-          alt={recipe.name}
-          className="h-40 w-full object-cover"
-          loading="lazy"
-        />
-      ) : (
-        <div
-          className="flex h-40 w-full items-center justify-center bg-gray-100 text-sm text-gray-400"
-          aria-label="No image available"
-        >
-          No image available
-        </div>
-      )}
+      {/* Image — clicking navigates to detail page */}
+      <Link to={`/recipes/${recipe.id}`} aria-label={`View details for ${recipe.name}`} tabIndex={-1}>
+        {recipe.image_url ? (
+          <img
+            src={recipe.image_url}
+            alt={recipe.name}
+            className="h-40 w-full object-cover hover:opacity-90 transition-opacity"
+            loading="lazy"
+          />
+        ) : (
+          <div
+            className="flex h-40 w-full items-center justify-center bg-gray-100 text-sm text-gray-400"
+            aria-label="No image available"
+          >
+            No image available
+          </div>
+        )}
+      </Link>
 
       {/* Body */}
       <div className="flex flex-1 flex-col gap-3 p-4">
         {/* Title + price */}
         <div className="flex items-start justify-between gap-2">
-          <h3 className="text-lg font-semibold leading-snug text-gray-900">
+          <Link
+            to={`/recipes/${recipe.id}`}
+            className="text-lg font-semibold leading-snug text-gray-900 hover:text-green-700 transition-colors"
+          >
             {recipe.name}
-          </h3>
+          </Link>
           <span className="whitespace-nowrap text-base font-semibold text-gray-900">
             {formatCurrency(recipe.price)}
           </span>
@@ -74,6 +80,12 @@ const RecipeCard = memo(({ recipe, onOrder, isAdmin, onEdit, onDelete }) => {
         <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
           {recipe.brew_method?.name || 'N/A'}
         </p>
+
+        {recipe.category && (
+          <span className="inline-block rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
+            {recipe.category.name}
+          </span>
+        )}
 
         {recipe.ingredients?.length > 0 && (
           <div className="flex flex-wrap gap-1.5">

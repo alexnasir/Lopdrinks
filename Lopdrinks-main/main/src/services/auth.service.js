@@ -12,7 +12,8 @@ const authService = {
    */
   login: async (credentials) => {
     const { data } = await apiClient.post(ENDPOINTS.LOGIN, credentials);
-    return data;
+    // Server envelope: { success, message, data: { token, role } }
+    return data?.data ?? data;
   },
 
   /**
@@ -21,7 +22,8 @@ const authService = {
    */
   register: async (payload) => {
     const { data } = await apiClient.post(ENDPOINTS.REGISTER, payload);
-    return data;
+    // Server envelope: { success, message, data: { otp } }
+    return data?.data ?? data;
   },
 
   /**
@@ -30,7 +32,7 @@ const authService = {
    */
   verify: async (payload) => {
     const { data } = await apiClient.post(ENDPOINTS.VERIFY, payload);
-    return data;
+    return data?.data ?? data;
   },
 };
 

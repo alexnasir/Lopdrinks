@@ -12,6 +12,7 @@ const HomePage         = lazy(() => import('../pages/HomePage'));
 const AboutPage        = lazy(() => import('../pages/AboutPage'));
 const ContactPage      = lazy(() => import('../pages/ContactPage'));
 const RecipesPage      = lazy(() => import('../pages/RecipesPage'));
+const RecipeDetailPage = lazy(() => import('../pages/RecipeDetailPage'));
 const OrdersPage       = lazy(() => import('../pages/OrdersPage'));
 const CreateRecipePage = lazy(() => import('../pages/CreateRecipePage'));
 const NotFoundPage     = lazy(() => import('../pages/NotFoundPage'));
@@ -26,8 +27,10 @@ const AdminDashboard = lazy(() => import('../features/dashboard/components/Admin
 const UserDashboard  = lazy(() => import('../features/dashboard/components/UserDashboard'));
 
 // Admin-only feature pages
-const BrewMethods = lazy(() => import('../features/brewing/components/BrewMethods'));
-const Ingredients = lazy(() => import('../features/ingredients/components/Ingredients'));
+const BrewMethods             = lazy(() => import('../features/brewing/components/BrewMethods'));
+const Ingredients             = lazy(() => import('../features/ingredients/components/Ingredients'));
+const AdminCategoriesPage     = lazy(() => import('../pages/AdminCategoriesPage'));
+const AdminRecipeCategoryPage = lazy(() => import('../pages/AdminRecipeCategoryPage'));
 
 // ─── Exported hook for App.jsx ───────────────────────────────────────────────
 /**
@@ -65,16 +68,18 @@ const AppRoutes = () => {
   // ── Auth handlers ──────────────────────────────────────────────────────
   const handleLogin = useCallback(async (data) => {
     const result = await authService.login(data);
-    persistAuth(result.token, result.role || ROLES.USER);
-    navigateRef.current(
-      result.role === ROLES.ADMIN ? ROUTES.ADMIN_DASHBOARD : ROUTES.USER_DASHBOARD
-    );
+    const role = result.role || ROLES.USER;
+    persistAuth(result.token, role);
+    const destination = role === ROLES.ADMIN ? ROUTES.ADMIN_DASHBOARD : ROUTES.USER_DASHBOARD;
+    toast.success(role === ROLES.ADMIN ? 'Welcome back, Admin!' : 'Welcome back!');
+    navigateRef.current(destination);
   }, [persistAuth]);
 
   const handleRegister = useCallback(async (data) => {
     const result = await authService.register(data);
     setIsRegistered(true);
-    setOtp(result.otp);
+    setOtp(result?.otp ?? null);
+    toast.success('Registered! Check your email for the OTP.');
     navigateRef.current(ROUTES.VERIFY);
   }, []);
 
@@ -105,6 +110,7 @@ const AppRoutes = () => {
         <Route path={ROUTES.ABOUT}   element={<AboutPage />} />
         <Route path={ROUTES.CONTACT} element={<ContactPage />} />
         <Route path={ROUTES.RECIPES} element={<RecipesPage />} />
+        <Route path={ROUTES.RECIPE_DETAIL} element={<RecipeDetailPage />} />
 
         {/* ── Auth (redirect if already logged in) ────────────────────── */}
         <Route
@@ -171,6 +177,14 @@ const AppRoutes = () => {
         <Route
           path={ROUTES.INGREDIENTS}
           element={<ProtectedRoute adminOnly><Ingredients /></ProtectedRoute>}
+        />
+        <Route
+          path={ROUTES.ADMIN_CATEGORIES}
+          element={<ProtectedRoute adminOnly><AdminCategoriesPage /></ProtectedRoute>}
+        />
+        <Route
+          path={ROUTES.ADMIN_RECIPE_CATEGORY}
+          element={<ProtectedRoute adminOnly><AdminRecipeCategoryPage /></ProtectedRoute>}
         />
 
         {/* ── 404 ─────────────────────────────────────────────────────── */}

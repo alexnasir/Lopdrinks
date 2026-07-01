@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { brewService, ingredientService, uploadService } from '../../../services';
+import { brewService, ingredientService, categoryService, uploadService } from '../../../services';
 import { recipeSchema } from '../../../validation/recipeSchema';
 import appConfig from '../../../config/app.config';
 
@@ -16,6 +16,7 @@ const RecipeForm = ({ recipe, onSubmit, onCancel }) => {
     price: recipe?.price || '',
     takeaway: recipe?.takeaway || false,
     brew_method_id: recipe?.brew_method?.id || '',
+    category_id: recipe?.category?.id || '',
     ingredients:
       recipe?.ingredients?.map((ing) => ({
         ingredient_id: ing.id,
@@ -24,6 +25,7 @@ const RecipeForm = ({ recipe, onSubmit, onCancel }) => {
     image_url: recipe?.image_url || '',
   });
   const [brewMethods, setBrewMethods] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [availableIngredients, setAvailableIngredients] = useState([]);
   const [imageFile, setImageFile] = useState(null);
   const [errors, setErrors] = useState({});
@@ -31,11 +33,12 @@ const RecipeForm = ({ recipe, onSubmit, onCancel }) => {
 
   useEffect(() => {
     let active = true;
-    Promise.all([brewService.getAll(), ingredientService.getAll()])
-      .then(([methods, ings]) => {
+    Promise.all([brewService.getAll(), ingredientService.getAll(), categoryService.getAll()])
+      .then(([methods, ings, cats]) => {
         if (active) {
           setBrewMethods(methods);
           setAvailableIngredients(ings);
+          setCategories(cats);
         }
       })
       .catch((err) => {
@@ -98,6 +101,7 @@ const RecipeForm = ({ recipe, onSubmit, onCancel }) => {
         ...formData,
         price: parseFloat(formData.price),
         brew_method_id: parseInt(formData.brew_method_id),
+        category_id: parseInt(formData.category_id),
         image_url: imageUrl,
       };
 
@@ -210,6 +214,26 @@ const RecipeForm = ({ recipe, onSubmit, onCancel }) => {
               ))}
             </select>
             {errors.brew_method_id && <p className="mt-1 text-red-200 text-xs">{errors.brew_method_id}</p>}
+          </div>
+
+          {/* Category */}
+          <div className="mb-4">
+            <label htmlFor="rf-category" className="block text-sm font-medium mb-1">Category</label>
+            <select
+              id="rf-category"
+              name="category_id"
+              value={formData.category_id}
+              onChange={handleChange}
+              className="w-full p-2 border text-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+              aria-invalid={!!errors.category_id}
+            >
+              <option value="">Select a category</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+            {errors.category_id && <p className="mt-1 text-red-200 text-xs">{errors.category_id}</p>}
           </div>
 
           {/* Image */}

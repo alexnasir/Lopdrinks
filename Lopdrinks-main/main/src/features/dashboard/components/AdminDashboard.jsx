@@ -16,17 +16,21 @@ const AdminDashboard = memo(() => {
   const cards = [
     { label: 'Manage Recipes', btn: 'Go to Recipes', route: ROUTES.RECIPES, color: 'blue' },
     { label: 'Create Recipe', btn: 'Create New Recipe', route: ROUTES.CREATE_RECIPE, color: 'green' },
+    { label: 'Manage Categories', btn: 'Go to Categories', route: ROUTES.ADMIN_CATEGORIES, color: 'teal' },
+    { label: 'Recipe → Category', btn: 'Assign Categories', route: ROUTES.ADMIN_RECIPE_CATEGORY, color: 'indigo' },
     { label: 'Manage Brew Methods', btn: 'Go to Brew Methods', route: ROUTES.BREW_METHODS, color: 'purple' },
     { label: 'Manage Ingredients', btn: 'Go to Ingredients', route: ROUTES.INGREDIENTS, color: 'orange' },
     { label: 'View All Orders', btn: 'View Orders', route: ROUTES.ORDERS, color: 'red' },
   ];
 
   const colorMap = {
-    blue: 'bg-blue-500 hover:bg-blue-600',
-    green: 'bg-green-500 hover:bg-green-600',
+    blue:   'bg-blue-500 hover:bg-blue-600',
+    green:  'bg-green-500 hover:bg-green-600',
+    teal:   'bg-teal-500 hover:bg-teal-600',
+    indigo: 'bg-indigo-500 hover:bg-indigo-600',
     purple: 'bg-purple-500 hover:bg-purple-600',
     orange: 'bg-orange-500 hover:bg-orange-600',
-    red: 'bg-red-500 hover:bg-red-600',
+    red:    'bg-red-500 hover:bg-red-600',
   };
 
   return (
