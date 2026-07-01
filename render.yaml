@@ -31,7 +31,7 @@ services:
           name: lopdrinks-db
           property: connectionString
       - key: ALLOWED_ORIGINS
-        value: "https://lopdrinks-blwa.vercel.app"
+        value: "https://lopdrinks-blwa.vercel.app,https://main-ecru-eight.vercel.app,https://lopdrinks-blwa-5ky8hytoj-alexs-projects-7f85cd3e.vercel.app"
 
 databases:
   - name: lopdrinks-db

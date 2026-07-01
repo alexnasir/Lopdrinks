@@ -41,14 +41,13 @@ def create_app(config_name: str | None = None) -> Flask:
     jwt.init_app(app)
     cors.init_app(
         app,
-        supports_credentials=True,
         resources={
             r"/*": {
                 "origins": app.config["ALLOWED_ORIGINS"],
                 "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
                 "allow_headers": ["Content-Type", "Authorization"],
                 "expose_headers": ["Content-Type", "Authorization"],
-                "supports_credentials": True,
+                "supports_credentials": False,
             }
         },
     )
